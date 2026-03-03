@@ -1,35 +1,80 @@
-# smallMark
+# shortlink-frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Frontend for the short-link system, built with Vue 3 + Vite.
 
-## Recommended IDE Setup
+## Tech Stack
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+### Core
+- Vue 3
+- Vite 4
+- Vue Router 4
+- Vuex 4
 
-## Customize configuration
+### UI & Interaction
+- Element Plus
+- @element-plus/icons-vue
+- SortableJS (drag sorting)
+- QRCode (QR rendering)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### Data & Visualization
+- Axios
+- ECharts 4 (including China/World map)
 
-## Project Setup
+### Effects & Utilities
+- Three.js
+- Vanta.js (login background effect)
+- Lodash
+- js-cookie
 
-```sh
+### Styling & Engineering
+- SCSS + Less
+- ESLint + Prettier
+- pnpm
+
+## Requirements
+
+- Node.js 18+ (recommended LTS)
+- pnpm 8+
+
+## Quick Start
+
+```bash
 pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 pnpm dev
 ```
 
-### Compile and Minify for Production
+Open the local URL printed by Vite (usually http://localhost:5173).
 
-```sh
-pnpm build
-```
+## Available Scripts
 
-### Lint with [ESLint](https://eslint.org/)
+- `pnpm dev` - start development server
+- `pnpm build` - build production bundle
+- `pnpm preview` - preview production build locally
+- `pnpm lint` - run ESLint and auto-fix
+- `pnpm format` - format source files with Prettier
 
-```sh
-pnpm lint
+## API Proxy (Development)
+
+Vite proxy is configured in [vite.config.js](vite.config.js):
+
+- `/api` -> `http://127.0.0.1:8000`
+
+Frontend request base path is configured in [src/api/axios.js](src/api/axios.js):
+
+- `/api/short-link/admin/v1`
+
+If your backend address changes, update these two places.
+
+## Project Structure
+
+```text
+src/
+	api/            # Axios instance + API modules
+	assets/         # Static assets
+	components/     # Shared components
+	core/           # Auth and core helpers
+	router/         # Route definitions and guards
+	store/          # Vuex store
+	utils/          # Utility functions
+	views/          # Page-level views
 ```
