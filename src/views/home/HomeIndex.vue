@@ -1,6 +1,6 @@
 <template>
   <div class="common-layout">
-    <el-container>
+    <el-main>
       <el-header height="54px" class="header-wrap">
         <div class="header">
           <button @click="toMySpace" class="logo" type="button">Chaos🔗短链接</button>
@@ -36,7 +36,6 @@
           </div>
         </div>
       </el-main>
-      <!-- <el-container>
         <el-aside width="180px">
           <el-menu
             active-text-color="#073372"
@@ -54,9 +53,7 @@
             </template>
           </el-menu></el-aside
         >
-
-      </el-container> -->
-    </el-container>
+    </el-main>
   </div>
 </template>
 
@@ -99,7 +96,7 @@ const toMySpace = () => {
   router.push('/home' + '/space')
 }
 
-const username = ref('UserName')
+const username = ref('User')
 
 onMounted(async () => {
   const actualUsername = getUsername() || 'User'

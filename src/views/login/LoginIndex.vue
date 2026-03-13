@@ -24,7 +24,7 @@
               <el-checkbox class="remeber-password" v-model="checked">记住密码</el-checkbox>
             </div>
             <div>
-              <el-button :loading="loading" @keyup.enter="login" type="primary" plain
+              <el-button :loading="loginLoading" :disabled="loginLoading" @keyup.enter="login" type="primary" plain
                 @click="login(loginFormRef1)">登录</el-button>
             </div>
           </div>
@@ -79,7 +79,7 @@
           <div class="btn-gourp">
             <div></div>
             <div>
-              <el-button :loading="loading" @keyup.enter="login" type="primary" plain
+              <el-button :loading="registerLoading" :disabled="registerLoading" @keyup.enter="login" type="primary" plain
                 @click="addUser(loginFormRef2)">注册</el-button>
             </div>
           </div>
@@ -104,7 +104,7 @@
 
 <script setup>
 import { setToken, setUsername, getUsername } from '@/core/auth.js'
-import { ref, reactive, onMounted, onBeforeUnmount, watch, getCurrentInstance } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import * as THREE from 'three'
@@ -161,84 +161,79 @@ const loginFormRule = reactive({
   ],
 })
 // 注册
-const addUser = (formEl) => {
-  if (!formEl) return
-  formEl.validate(async (valid) => {
-    if (valid) {
-      // 检测用户名是否已经存在
-      const res1 = await API.user.hasUsername({ username: addForm.username })
-      if (res1.data.success !== false) {
-        // 注册
-        const res2 = await API.user.addUser(addForm)
-        // console.log(res2)
-        if (res2.data.success === false) {
-          ElMessage.warning(res2.data.message)
-        } else {
-          const res3 = await API.user.login({ username: addForm.username, password: addForm.password })
-          const token = res3?.data?.data?.token
-          // 将username和token保存到cookies中和localStorage中
-          if (token) {
-            setToken(token)
-            setUsername(addForm.username)
-            localStorage.setItem('token', token)
-            localStorage.setItem('username', addForm.username)
-          }
-          ElMessage.success('注册登录成功！')
-          router.push('/home')
-        }
-      } else {
-        ElMessage.warning('用户名已存在！')
-      }
-    } else {
-      return false
-    }
-  })
+const addUser = async (formEl) => {
+  if (!formEl || registerLoading.value) return
+  registerLoading.value = true
+  try {
+    const valid = await formEl.validate().then(() => true).catch(() => false)
+    if (!valid) return false
 
-}
-// 登录
-const login = (formEl) => {
-  if (!formEl) return
-  formEl.validate(async (valid) => {
-    if (valid) {
-      // 当域名为下面这两个时，弹出公众号弹框
-      // let domain = window.location.host
-      // if (domain === 'shortlink.magestack.cn' || domain === 'shortlink.nageoffer.com') {
-      //   isWC.value = true
-      //   return
-      // }
-      const res1 = await API.user.login(loginForm)
-      if (res1.data.code === '0') {
-        const token = res1?.data?.data?.token
+    // 检测用户名是否已经存在
+    const res1 = await API.user.hasUsername({ username: addForm.username })
+    if (res1.data.success !== false) {
+      // 注册
+      const res2 = await API.user.addUser(addForm)
+      if (res2.data.success === false) {
+        ElMessage.warning(res2.data.message)
+      } else {
+        const res3 = await API.user.login({ username: addForm.username, password: addForm.password })
+        const token = res3?.data?.data?.token
         // 将username和token保存到cookies中和localStorage中
         if (token) {
           setToken(token)
-          setUsername(loginForm.username)
+          setUsername(addForm.username)
           localStorage.setItem('token', token)
-          localStorage.setItem('username', loginForm.username)
+          localStorage.setItem('username', addForm.username)
         }
-        ElMessage.success('登录成功！')
+        ElMessage.success('注册登录成功！')
         router.push('/home')
-      } else if (res1.data.message === '用户已登录') {
-        // 如果已经登录了，判断一下浏览器保存的登录信息是不是再次登录的信息，如果是就正常登录
-        const cookiesUsername = getUsername()
-        if (cookiesUsername === loginForm.username) {
-          ElMessage.success('登录成功！')
-          router.push('/home')
-        } else {
-          ElMessage.warning('用户已在别处登录，请勿重复登录！')
-        }
-      } else if (res1.data.message === '用户不存在') {
-        ElMessage.error('请输入正确的账号密码!')
       }
     } else {
-      return false
+      ElMessage.warning('用户名已存在！')
     }
-  })
+  } finally {
+    registerLoading.value = false
+  }
+}
+// 登录
+const login = async (formEl) => {
+  if (!formEl || loginLoading.value) return
+  loginLoading.value = true
+  try {
+    const valid = await formEl.validate().then(() => true).catch(() => false)
+    if (!valid) return false
 
-
+    const res1 = await API.user.login(loginForm)
+    if (res1.data.code === '0') {
+      const token = res1?.data?.data?.token
+      // 将username和token保存到cookies中和localStorage中
+      if (token) {
+        setToken(token)
+        setUsername(loginForm.username)
+        localStorage.setItem('token', token)
+        localStorage.setItem('username', loginForm.username)
+      }
+      ElMessage.success('登录成功！')
+      router.push('/home')
+    } else if (res1.data.message === '用户已登录') {
+      // 如果已经登录了，判断一下浏览器保存的登录信息是不是再次登录的信息，如果是就正常登录
+      const cookiesUsername = getUsername()
+      if (cookiesUsername === loginForm.username) {
+        ElMessage.success('登录成功！')
+        router.push('/home')
+      } else {
+        ElMessage.warning('用户已在别处登录，请勿重复登录！')
+      }
+    } else if (res1.data.message === '用户不存在') {
+      ElMessage.error('请输入正确的账号密码!')
+    }
+  } finally {
+    loginLoading.value = false
+  }
 }
 
-const loading = ref(false)
+const loginLoading = ref(false)
+const registerLoading = ref(false)
 // 是否记住密码
 const checked = ref(true)
 const vantaRef = ref()

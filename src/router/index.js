@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { isNotEmpty } from '@/utils/plugins'
 import { getToken, setToken, setUsername } from '@/core/auth' // 验权
-import user from '@/api/modules/user'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -26,12 +25,6 @@ const router = createRouter({
           name: 'MySpace',
           component: () => import('@/views/mySpace/MySpaceIndex.vue'),
           meta: { title: '我的空间' }
-        },
-        {
-          path: 'recycleBin',
-          name: 'RecycleBin',
-          component: () => import('@/views/recycleBin/RecycleBinIndex.vue'),
-          meta: { title: '账户设置' }
         },
         {
           path: 'account',

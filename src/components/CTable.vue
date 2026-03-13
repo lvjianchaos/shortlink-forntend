@@ -142,7 +142,7 @@ defineExpose({
         <template v-for="(col, index) in computedHeaders">
           <!-- btns操作栏 -->
           <el-table-column
-            :key="index + col"
+            :key="`btns-${index}-${col.prop || col.label || ''}`"
             v-bind="col"
             v-if="col.colType == 'btns' && !col.hidden"
           >
@@ -160,7 +160,7 @@ defineExpose({
           </el-table-column>
           <!-- 自定义栏 -->
           <el-table-column
-            :key="index + col"
+            :key="`custom-${index}-${col.prop || col.label || ''}`"
             v-bind="col"
             v-else-if="col.colType == 'column' && !col.hidden"
           >
@@ -169,7 +169,11 @@ defineExpose({
             </template>
           </el-table-column>
           <!-- 通用栏 -->
-          <el-table-column v-bind="col" :key="index + col" v-else-if="!col.hidden">
+          <el-table-column
+            v-bind="col"
+            :key="`normal-${index}-${col.prop || col.label || ''}`"
+            v-else-if="!col.hidden"
+          >
           </el-table-column>
         </template>
         <!-- 数据为空 -->

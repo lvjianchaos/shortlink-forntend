@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, nextTick, watch, onBeforeUnmount, getCurrentInstance } from 'vue'
+import { reactive, ref, watch, onBeforeUnmount, getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'
 
@@ -87,7 +87,7 @@ const { proxy } = getCurrentInstance()
 const API = proxy.$API
 // url的校验规则
 const reg =
-  /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+))(:\d+)?(\/.*)?(\?.*)?(#.*)?$/
+  /^https?:\/\/(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,63}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i
 // 自定义时间中选择几天
 const shortcuts = [
   {
@@ -128,8 +128,6 @@ const formData = reactive({
 })
 watch(
   () => formData,
-  nV => {
-  },
   {
     deep: true
   }
@@ -226,20 +224,24 @@ const formRule = reactive({
     { required: true, message: '请输入链接', trigger: 'blur' },
     {
       validator: function (rule, value, callback) {
-        // console.log('============', value, value.split('/n'))
-        if (value) {
-          value.split(/\r|\r\n|\n/).forEach((item) => {
-            if (!reg.test(item)) {
-              callback(new Error('请输入 http:// 或 https:// 开头的链接或应用跳转链接'))
-            }
-          })
+        const lines = String(value || '')
+          .split(/\r\n|\r|\n/)
+          .map((item) => item.trim())
+          .filter(Boolean)
+
+        const invalidLine = lines.find((item) => !reg.test(item))
+        if (invalidLine) {
+          callback(new Error('请输入 http:// 或 https:// 开头的有效链接'))
+          return
         }
+
         if (originUrlRows.value > maxOriginUrlRows.value) {
           callback(new Error('超过输入' + maxOriginUrlRows.value + '行'))
-        } else {
-          callback()
-          submitDisable.value = false
+          return
         }
+
+        callback()
+        submitDisable.value = false
       },
       trigger: 'blur'
     }
@@ -292,7 +294,7 @@ const onSubmit = async (formEl) => {
     submitDisable.value = false
     return
   }
-  await formEl.validate(async (valid, fields) => {
+  await formEl.validate(async (valid) => {
     if (valid) {
       const res = await API.smallLinkPage.addSmallLink(formData)
       if (!res?.data?.success) {
