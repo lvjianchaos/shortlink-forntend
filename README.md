@@ -5,28 +5,33 @@ Frontend for the short-link system, built with Vue 3 + Vite.
 ## Tech Stack
 
 ### Core
+
 - Vue 3
 - Vite 4
 - Vue Router 4
 - Vuex 4
 
 ### UI & Interaction
+
 - Element Plus
 - @element-plus/icons-vue
 - SortableJS (drag sorting)
 - QRCode (QR rendering)
 
 ### Data & Visualization
+
 - Axios
 - ECharts 4 (including China/World map)
 
 ### Effects & Utilities
+
 - Three.js
 - Vanta.js (login background effect)
 - Lodash
 - js-cookie
 
 ### Styling & Engineering
+
 - SCSS + Less
 - ESLint + Prettier
 - pnpm
@@ -43,7 +48,7 @@ pnpm install
 pnpm dev
 ```
 
-Open the local URL printed by Vite (usually http://localhost:5173).
+Open the local URL printed by Vite (usually <http://localhost:5173>).
 
 ## Available Scripts
 
@@ -69,12 +74,12 @@ If your backend address changes, update these two places.
 
 ```text
 src/
-	api/            # Axios instance + API modules
-	assets/         # Static assets
-	components/     # Shared components
-	core/           # Auth and core helpers
-	router/         # Route definitions and guards
-	store/          # Vuex store
-	utils/          # Utility functions
-	views/          # Page-level views
+    api/            # Axios instance + API modules
+    assets/         # Static assets
+    components/     # Shared components
+    core/           # Auth and core helpers
+    router/         # Route definitions and guards
+    store/          # Vuex store
+    utils/          # Utility functions
+    views/          # Page-level views
 ```
